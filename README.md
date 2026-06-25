@@ -83,10 +83,27 @@ src/
 After editing files, click the **reload** icon on the extension card, and reload
 any open Slack/Grafana tabs so the new content script injects.
 
-**Firefox**
+> Chrome shows a harmless warning, *"Unrecognized manifest key
+> 'background.scripts'"*. That key is for Firefox's event page; Chrome uses
+> `background.service_worker` and ignores `scripts`. Safe to ignore.
+
+**Firefox — temporary (any edition; removed on restart)**
 1. Open `about:debugging#/runtime/this-firefox`.
 2. Click **Load Temporary Add-on…** and select this project's `manifest.json`.
-3. Use it the same way (temporary add-ons are removed when Firefox restarts).
+
+**Firefox — permanent from file (ESR, Developer Edition, or Nightly only)**
+
+Release Firefox requires Mozilla-signed add-ons, so installing an unsigned
+package from file only works on **ESR**, **Developer Edition**, or **Nightly**:
+
+1. Build the package: `npm run package`, then rename `sync-theme.zip` to
+   `sync-theme.xpi` (a `.xpi` is just the zip).
+2. Open `about:config` and set `xpinstall.signatures.required` to `false`.
+3. Open `about:addons` → the gear icon → **Install Add-on From File…** → choose
+   `sync-theme.xpi`.
+
+On release (standard) Firefox this is blocked; you'd need a Mozilla-signed `.xpi`
+from [AMO](https://addons.mozilla.org).
 
 ## Scripts
 
