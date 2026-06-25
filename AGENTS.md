@@ -14,6 +14,17 @@ toggled on, and once when a matching tab loads.
 
 Status: working for Slack and Grafana, loadable unpacked, not yet published.
 
+## Hard requirement: self-hosted Grafana support
+
+**Supporting self-hosted Grafana instances on arbitrary user-supplied domains is
+a permanent, non-negotiable requirement of this extension.** The optional
+`https://*/*` host permission, the `scripting` permission, the dynamic
+content-script registration, and the options-page domain manager all exist to
+serve it. Do **not** remove or weaken any of these to simplify Chrome Web Store
+review or for any other convenience. If review pushes back on the broad
+permission, answer with the justification (it is optional and user-approved
+per-domain) — never by dropping the capability.
+
 ## Core design constraints
 
 - **No build step.** Source loads directly via "Load unpacked". Don't introduce
@@ -175,4 +186,5 @@ it live this way over guessing — both apps change their internals between buil
 ## Open follow-ups
 - **Slack no-reload**: revisit the Preferences-radio approach if the reload UX
   becomes a problem (see the Slack section).
-- **Publishing**: Chrome Web Store listing/review (justify `optional_host_permissions`).
+- **Publishing**: see [PUBLISHING.md](PUBLISHING.md) (checklist, permission
+  justifications) and [PRIVACY.md](PRIVACY.md).

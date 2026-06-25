@@ -96,6 +96,11 @@ npm run package    # Run manifest sync, then produce sync-theme.zip
 
 CI (`.github/workflows/ci.yml`) runs `check` on every push and PR.
 
+## Publishing
+
+See [PUBLISHING.md](PUBLISHING.md) for the Chrome Web Store release checklist and
+paste-ready listing content, and [PRIVACY.md](PRIVACY.md) for the privacy policy.
+
 ## License
 
 Apache-2.0 — see [LICENSE](LICENSE).
