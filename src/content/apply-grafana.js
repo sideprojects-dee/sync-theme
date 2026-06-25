@@ -26,7 +26,26 @@ export function applyGrafanaTheme(theme) {
 const SHORTCUT = ["c", "t"];
 
 function toggleTheme() {
+  // Grafana suppresses shortcuts while a form field is focused. If one is, blur
+  // it for the keypress and restore focus afterwards so we don't disrupt typing.
+  const active = document.activeElement;
+  const restore = isEditable(active);
+  if (restore) active.blur();
+
   for (const key of SHORTCUT) pressKey(key);
+
+  if (restore && typeof active.focus === "function") active.focus();
+}
+
+function isEditable(el) {
+  if (!el) return false;
+  const tag = el.tagName;
+  return (
+    tag === "INPUT" ||
+    tag === "TEXTAREA" ||
+    tag === "SELECT" ||
+    el.isContentEditable === true
+  );
 }
 
 /**

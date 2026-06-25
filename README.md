@@ -35,7 +35,12 @@ the sites you choose. The goal: when I switch my OS between light and dark mode,
     > follow-the-system extension.
   - **Grafana** (`src/content/apply-grafana.js`): detects the rendered theme via
     the CSS `color-scheme` on `<html>`, and if it differs from the target, fires
-    Grafana's built-in toggle shortcut (the keys `c` then `t`).
+    Grafana's built-in toggle shortcut (the keys `c` then `t`). If a form field
+    is focused (Grafana suppresses shortcuts while typing), it briefly blurs it
+    for the keypress and restores focus.
+- **At load** — an already-open tab gets no `change` event, so on start the
+  content script polls until the app is ready and corrects the theme *only if it
+  differs* from the system (it won't disturb a tab that's already right).
 
 ## Project layout
 

@@ -47,6 +47,11 @@ export function applySlackTheme(theme) {
   }
 }
 
+/** @returns {"light" | "dark"} the color mode Slack is currently showing. */
+export function currentSlackTheme() {
+  return document.body?.classList.contains(DARK_CLASS) ? "dark" : "light";
+}
+
 /**
  * Keep each workspace's `iaTheming.mode` in sync with the color mode so custom
  * themes resolve their correct light/dark palette on reload. Best-effort: the
