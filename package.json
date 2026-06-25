@@ -1,0 +1,12 @@
+{
+  "name": "sync-theme",
+  "version": "0.1.0",
+  "description": "Chrome extension that follows your system light/dark theme and applies it to the sites you choose.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "icons": "for s in 16 32 48 128; do magick -background none icons/icon.svg -resize ${s}x${s} icons/icon-${s}.png; done",
+    "package": "rm -f sync-theme.zip && zip -r sync-theme.zip manifest.json icons src -x '*.DS_Store'"
+  },
+  "license": "Apache-2.0"
+}

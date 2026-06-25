@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sync Theme</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <header class="popup__header">
+        <img class="popup__logo" src="../../icons/icon-48.png" alt="" width="28" height="28" />
+        <h1 class="popup__title">Sync Theme</h1>
+      </header>
+
+      <label class="toggle">
+        <span class="toggle__text">Enabled</span>
+        <input id="enabled-toggle" class="toggle__input" type="checkbox" role="switch" />
+        <span class="toggle__track" aria-hidden="true"><span class="toggle__thumb"></span></span>
+      </label>
+
+      <p id="status-hint" class="popup__hint"></p>
+    </main>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
