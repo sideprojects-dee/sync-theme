@@ -4,12 +4,6 @@
 
 /** @typedef {"slack" | "grafana"} SiteId */
 
-/** @type {Record<SiteId, string>} */
-export const SITE_LABELS = {
-  slack: "Slack",
-  grafana: "Grafana",
-};
-
 /**
  * @returns {SiteId | null} the verified site, or null if this isn't one.
  */

@@ -23,19 +23,19 @@ the sites you choose. The goal: when I switch my OS between light and dark mode,
   dynamically-registered content script that persists across restarts. Pages are
   still verified as real Grafana by their app markers before anything happens.
 - **On system theme change** — when enabled *and* on a verified instance:
-  - **Slack**: the theme is applied automatically (no prompt), live, with no
-    reload. `src/content/apply-slack.js` reconciles Slack's two theming layers —
-    it toggles the master palette class (`body.sk-client-theme--dark`) and strips
-    the sidebar-inversion classes so a colored sidebar follows the color mode
-    instead of rendering "inverse". It also writes Slack's own storage
-    (`slack-client-theme`, plus each workspace's `iaTheming.mode`) so the choice
-    persists across reloads and new tabs.
+  - **Slack** (`src/content/apply-slack.js`): applied live, no reload. Reconciles
+    Slack's two theming layers — toggles the master palette class
+    (`body.sk-client-theme--dark`) and strips the sidebar-inversion classes so a
+    colored sidebar follows the color mode instead of rendering "inverse". Also
+    writes Slack's own storage (`slack-client-theme`, plus each workspace's
+    `iaTheming.mode`) so the choice persists across reloads and new tabs.
 
     > Note: in light mode the sidebar follows the mode (light), rather than
     > keeping a theme's dark/inverted sidebar. That's intentional for a
     > follow-the-system extension.
-  - **Grafana**: not implemented yet — falls back to a Shadow-DOM confirmation
-    prompt asking whether to change the theme.
+  - **Grafana** (`src/content/apply-grafana.js`): detects the rendered theme via
+    the CSS `color-scheme` on `<html>`, and if it differs from the target, fires
+    Grafana's built-in toggle shortcut (the keys `c` then `t`).
 
 ## Project layout
 
@@ -54,10 +54,10 @@ src/
     options.{html,css,js}  # Manage the custom Grafana domain list
   content/
     bootstrap.js           # Classic entry; dynamically imports the ES modules
-    main.js                # Orchestrates: enabled? verified site? apply / prompt
+    main.js                # Orchestrates: enabled? verified site? apply theme
     sites.js               # Verifies Slack/Grafana instances vs. marketing
     apply-slack.js         # Applies the light/dark theme to Slack, live
-    prompt.js              # Shadow-DOM confirmation prompt (Grafana, for now)
+    apply-grafana.js       # Detects Grafana's theme + fires its toggle shortcut
 ```
 
 ## Install locally (unpacked)
