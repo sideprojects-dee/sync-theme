@@ -1,8 +1,9 @@
 # sync-theme
 
-A Chrome extension that follows your system's light/dark theme and applies it to
-the sites you choose. The goal: when I switch my OS between light and dark mode,
-**Slack Web** and **Grafana Cloud** should switch with it.
+A Chrome extension that switches **Slack** and **Grafana** between light and dark
+to match your operating system's theme. It works **only** on Slack and Grafana —
+nothing else. The goal: when I switch my OS between light and dark mode, Slack web
+and Grafana (Cloud or self-hosted) follow along.
 
 > Status: early. A single **Enabled** toggle controls the whole extension. When
 > enabled, on a verified Slack or Grafana instance, a system theme change shows a
