@@ -5,32 +5,36 @@ to match your operating system's theme. It works **only** on Slack and Grafana �
 nothing else. The goal: when I switch my OS between light and dark mode, Slack web
 and Grafana (Cloud or self-hosted) follow along.
 
-> Status: early. A single **Enabled** toggle controls the whole extension. When
-> enabled, on a verified Slack or Grafana instance, a system theme change shows a
-> confirmation prompt. Actually re-theming the site is not implemented yet.
+> Status: early but functional. Slack and Grafana follow the OS theme on change
+> and at load. Supported sites live in a small adapter registry, so adding more
+> is a one-file change.
 
 ## Behavior
 
-- **Enabled toggle** (popup) — when off, the extension does nothing at all. The
-  flag is stored in `chrome.storage.sync`, so it follows your Chrome profile.
+- **Toggles** (popup) — a master **Enabled** switch plus a per-site switch for
+  each supported site, so you can run, say, Slack but not Grafana. When the
+  master is off the extension does nothing. Stored in `chrome.storage.sync`, so
+  choices follow your Chrome profile. Toggling a site on re-themes any open tab.
 - **Where it runs** — only on pages verified to be a real Slack or Grafana
-  instance (see `src/content/sites.js`), never their marketing/docs sites:
+  instance (each site adapter's `detect()` in `src/content/sites/`), never their
+  marketing/docs sites:
   - Slack: `app.slack.com` and workspace `*.slack.com` subdomains.
   - Grafana: `*.grafana.net` and other `grafana.com`/`grafana.net` URLs whose
     page is confirmed to be the Grafana app.
-- **Self-hosted Grafana (optional)** — Grafana Cloud works out of the box. If you
-  run a self-hosted instance on your own domain, add it on the **options page**.
-  Each domain is gated behind a one-time Chrome permission prompt and served by a
-  dynamically-registered content script that persists across restarts. Pages are
-  still verified as real Grafana by their app markers before anything happens.
+- **Self-hosted instances (optional)** — hosted services work out of the box.
+  If you run a self-hosted instance of a supported app (currently Grafana) on
+  your own domain, add it on the **options page**. Each domain is gated behind a
+  one-time Chrome permission prompt and served by a dynamically-registered
+  content script that persists across restarts. Pages are still verified as the
+  real app by their markers before anything happens.
 - **On system theme change** — when enabled *and* on a verified instance:
-  - **Slack** (`src/content/apply-slack.js`): writes Slack's own
+  - **Slack** (`src/content/sites/slack.js`): writes Slack's own
     `slack-client-theme` key (`"light"`/`"dark"`) and reloads the tab. Slack's
     color mode is React-rendered and computes per-workspace (custom) theme colors
     that a CSS toggle can't reproduce, so reloading lets Slack repaint correctly —
     including custom workspace themes. The reload is skipped when Slack is already
     in the target mode.
-  - **Grafana** (`src/content/apply-grafana.js`): detects the rendered theme via
+  - **Grafana** (`src/content/sites/grafana.js`): detects the rendered theme via
     the CSS `color-scheme` on `<html>`, and if it differs from the target, fires
     Grafana's built-in toggle shortcut (the keys `c` then `t`). If a form field
     is focused (Grafana suppresses shortcuts while typing), it briefly blurs it
@@ -42,24 +46,27 @@ and Grafana (Cloud or self-hosted) follow along.
 ## Project layout
 
 ```
-manifest.json              # MV3 manifest
+manifest.json              # MV3 manifest (content_scripts matches are generated)
 icons/                     # Extension icons (icon.svg is the source of truth)
+scripts/
+  sync-manifest.mjs        # Regenerates manifest matches from the site adapters
 src/
   lib/
-    storage.js             # Shared `enabled` state (popup + worker + content)
-    custom-domains.js      # Self-hosted Grafana domains: validate, store, register
+    storage.js             # Settings: master + per-site enable (popup/worker/content)
+    custom-domains.js      # Self-hosted domains: validate, store, register
   background/
     service-worker.js      # MV3 worker; seeds defaults, reconciles registrations
   popup/
-    popup.{html,css,js}    # Toolbar popup with the Enabled toggle + options link
+    popup.{html,css,js}    # Master + per-site toggles, link to options
   options/
-    options.{html,css,js}  # Manage the custom Grafana domain list
+    options.{html,css,js}  # Manage the custom (self-hosted) domain list
   content/
     bootstrap.js           # Classic entry; dynamically imports the ES modules
     main.js                # Orchestrates: enabled? verified site? apply theme
-    sites.js               # Verifies Slack/Grafana instances vs. marketing
-    apply-slack.js         # Applies the light/dark theme to Slack, live
-    apply-grafana.js       # Detects Grafana's theme + fires its toggle shortcut
+    sites/
+      index.js             # Adapter registry + detectSite() (single source of truth)
+      slack.js             # Slack adapter: detect / current / apply
+      grafana.js           # Grafana adapter: detect / current / apply
 ```
 
 ## Install locally (unpacked)
@@ -67,22 +74,27 @@ src/
 1. Open `chrome://extensions`.
 2. Toggle **Developer mode** on (top-right).
 3. Click **Load unpacked** and select this project's root folder.
-4. Pin **Sync Theme** from the extensions menu and open the popup — it shows the
-   current system theme and updates live when you switch.
+4. Pin **Sync Theme**, open the popup, and make sure the master switch and the
+   site you want are on.
 
 After editing files, click the **reload** icon on the extension card in
-`chrome://extensions` to pick up changes.
+`chrome://extensions` to pick up changes (and reload any open Slack/Grafana tabs
+so the new content script injects).
 
 ## Scripts
 
-This project has no build step — Chrome loads the source directly. The optional
-scripts require [ImageMagick](https://imagemagick.org) (`icons`) and `zip`
-(`package`):
+This project has no build step — Chrome loads the source directly. There are a
+few helper scripts (`icons` needs [ImageMagick](https://imagemagick.org),
+`package` needs `zip`):
 
 ```sh
+npm run check      # Syntax-check sources + verify the manifest is in sync
+npm run manifest   # Regenerate manifest content_scripts matches from the adapters
 npm run icons      # Regenerate PNG icons from icons/icon.svg
-npm run package    # Produce sync-theme.zip for the Chrome Web Store
+npm run package    # Run manifest sync, then produce sync-theme.zip
 ```
+
+CI (`.github/workflows/ci.yml`) runs `check` on every push and PR.
 
 ## License
 

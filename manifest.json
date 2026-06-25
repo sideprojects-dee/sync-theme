@@ -25,25 +25,38 @@
     "service_worker": "src/background/service-worker.js",
     "type": "module"
   },
-  "permissions": ["storage", "scripting"],
-  "optional_host_permissions": ["https://*/*"],
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
+  ],
   "content_scripts": [
     {
       "matches": [
-        "https://*.slack.com/*",
-        "https://slack.com/*",
-        "https://*.grafana.net/*",
         "https://*.grafana.com/*",
-        "https://grafana.com/*"
+        "https://*.grafana.net/*",
+        "https://*.slack.com/*",
+        "https://grafana.com/*",
+        "https://slack.com/*"
       ],
-      "js": ["src/content/bootstrap.js"],
+      "js": [
+        "src/content/bootstrap.js"
+      ],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["src/content/*.js", "src/lib/*.js"],
-      "matches": ["https://*/*"]
+      "resources": [
+        "src/content/*.js",
+        "src/content/sites/*.js",
+        "src/lib/*.js"
+      ],
+      "matches": [
+        "https://*/*"
+      ]
     }
   ],
   "minimum_chrome_version": "116"

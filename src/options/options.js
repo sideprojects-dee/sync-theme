@@ -7,6 +7,12 @@ import {
   enableDomain,
   removeDomain,
 } from "../lib/custom-domains.js";
+import { SITE_META } from "../content/sites/index.js";
+
+// Name the apps that support self-hosting, straight from the adapter registry.
+const supported = SITE_META.filter((s) => s.supportsCustomDomains).map((s) => s.label);
+document.getElementById("supported-apps").textContent =
+  supported.length ? supported.join(", ") : "none yet";
 
 const form = document.getElementById("add-form");
 const input = document.getElementById("domain-input");

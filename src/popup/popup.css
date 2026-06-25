@@ -118,6 +118,25 @@ body {
   outline-offset: 2px;
 }
 
+.sites {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toggle--site {
+  padding: 10px 14px;
+}
+
+.toggle--site .toggle__text {
+  font-weight: 400;
+}
+
+.sites--disabled {
+  opacity: 0.5;
+}
+
 .popup__hint {
   margin: 12px 2px 0;
   color: var(--text-muted);

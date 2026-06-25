@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "icons": "for s in 16 32 48 128; do magick -background none icons/icon.svg -resize ${s}x${s} icons/icon-${s}.png; done",
-    "package": "rm -f sync-theme.zip && zip -r sync-theme.zip manifest.json icons src -x '*.DS_Store'"
+    "manifest": "node scripts/sync-manifest.mjs",
+    "check": "node scripts/sync-manifest.mjs --check && find src scripts -type f \\( -name '*.js' -o -name '*.mjs' \\) -exec node --check {} ';'",
+    "package": "npm run manifest && rm -f sync-theme.zip && zip -r sync-theme.zip manifest.json icons src -x '*.DS_Store'"
   },
   "license": "Apache-2.0"
 }

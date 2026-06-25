@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Syntax-check sources
+        run: |
+          files=$(find src scripts -type f \( -name '*.js' -o -name '*.mjs' \))
+          for f in $files; do
+            echo "checking $f"
+            node --check "$f"
+          done
+
+      - name: Validate manifest JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"
+
+      - name: Manifest matches in sync with adapters
+        run: node scripts/sync-manifest.mjs --check

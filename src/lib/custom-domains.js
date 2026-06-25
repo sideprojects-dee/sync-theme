@@ -1,16 +1,18 @@
-// Manages the user's optional list of self-hosted Grafana domains.
+// Manages the user's optional list of self-hosted instance domains.
 //
-// Grafana Cloud (*.grafana.net etc.) is handled by the static content script in
-// the manifest and needs no setup. This module is only for self-hosted instances
-// on the user's own domains: each one is gated behind an optional host permission
-// and served by a dynamically-registered content script that persists across
-// browser restarts.
+// Hosted services (Grafana Cloud, Slack, etc.) are handled by the static content
+// script in the manifest and need no setup. This module is only for self-hosted
+// instances on the user's own domains: each is gated behind an optional host
+// permission and served by a dynamically-registered content script that persists
+// across browser restarts. The injected script is the same `bootstrap.js`; the
+// content-script site detection picks whichever adapter matches the page (so
+// only domains running a supported app actually get themed).
 //
 // Stored in chrome.storage.local (not sync) because the matching host permission
 // is granted per-device — syncing the list wouldn't sync the permission.
 
-const STORAGE_KEY = "grafanaDomains";
-const SCRIPT_PREFIX = "grafana-custom-";
+const STORAGE_KEY = "customDomains";
+const SCRIPT_PREFIX = "custom-domain-";
 
 // A fully-qualified domain name: 2+ labels, no scheme/port/path, no wildcards.
 const FQDN_RE =
