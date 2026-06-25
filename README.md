@@ -17,8 +17,20 @@ the sites you choose. The goal: when I switch my OS between light and dark mode,
   - Slack: `app.slack.com` and workspace `*.slack.com` subdomains.
   - Grafana: `*.grafana.net` and other `grafana.com`/`grafana.net` URLs whose
     page is confirmed to be the Grafana app.
-- **On system theme change** — when enabled *and* on a verified instance, a
-  Shadow-DOM confirmation prompt asks whether to change the site's theme.
+- **On system theme change** — when enabled *and* on a verified instance:
+  - **Slack**: the theme is applied automatically (no prompt), live, with no
+    reload. `src/content/apply-slack.js` reconciles Slack's two theming layers —
+    it toggles the master palette class (`body.sk-client-theme--dark`) and strips
+    the sidebar-inversion classes so a colored sidebar follows the color mode
+    instead of rendering "inverse". It also writes Slack's own storage
+    (`slack-client-theme`, plus each workspace's `iaTheming.mode`) so the choice
+    persists across reloads and new tabs.
+
+    > Note: in light mode the sidebar follows the mode (light), rather than
+    > keeping a theme's dark/inverted sidebar. That's intentional for a
+    > follow-the-system extension.
+  - **Grafana**: not implemented yet — falls back to a Shadow-DOM confirmation
+    prompt asking whether to change the theme.
 
 ## Project layout
 
