@@ -1,23 +1,26 @@
-// Background service worker (Manifest V3).
+// Background entry point.
 //
-// MV3 service workers are event-driven and may be terminated when idle, so all
-// state must live in chrome.storage rather than module-level variables. It seeds
-// the default `enabled` flag and keeps the dynamically-registered content scripts
-// for custom Grafana domains in sync with the stored list and granted permissions.
+// Runs as a service worker in Chrome and a (non-persistent) event page in
+// Firefox — both load this module via the dual `background` keys in the manifest.
+// Either way it is event-driven, so all state lives in extension storage, not in
+// module-level variables. It seeds the default `enabled` flag and keeps the
+// dynamically-registered content scripts for custom domains in sync with the
+// stored list and granted permissions.
 
+import { ext } from "../lib/ext.js";
 import { DEFAULTS } from "../lib/storage.js";
 import { reconcile } from "../lib/custom-domains.js";
 
-chrome.runtime.onInstalled.addListener(async () => {
-  const { enabled } = await chrome.storage.sync.get("enabled");
+ext.runtime.onInstalled.addListener(async () => {
+  const { enabled } = await ext.storage.sync.get("enabled");
   if (typeof enabled === "undefined") {
-    await chrome.storage.sync.set({ enabled: DEFAULTS.enabled });
+    await ext.storage.sync.set({ enabled: DEFAULTS.enabled });
   }
   await reconcile();
 });
 
 // Re-assert dynamic registrations on browser start and whenever the set of
 // granted host permissions changes (including external revocation).
-chrome.runtime.onStartup.addListener(reconcile);
-chrome.permissions.onAdded.addListener(reconcile);
-chrome.permissions.onRemoved.addListener(reconcile);
+ext.runtime.onStartup.addListener(reconcile);
+ext.permissions.onAdded.addListener(reconcile);
+ext.permissions.onRemoved.addListener(reconcile);

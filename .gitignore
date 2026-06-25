@@ -1,5 +1,6 @@
 # Build / packaging artifacts
-sync-theme.zip
+*.zip
+*.xpi
 dist/
 
 # Dependencies (none yet, but in case a toolchain is added later)

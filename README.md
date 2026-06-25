@@ -1,9 +1,10 @@
 # sync-theme
 
-A Chrome extension that switches **Slack** and **Grafana** between light and dark
-to match your operating system's theme. It works **only** on Slack and Grafana —
-nothing else. The goal: when I switch my OS between light and dark mode, Slack web
-and Grafana (Cloud or self-hosted) follow along.
+A browser extension for **Chrome and Firefox** that switches **Slack** and
+**Grafana** between light and dark to match your operating system's theme. It
+works **only** on Slack and Grafana — nothing else. The goal: when I switch my OS
+between light and dark mode, Slack web and Grafana (Cloud or self-hosted) follow
+along.
 
 > Status: early but functional. Slack and Grafana follow the OS theme on change
 > and at load. Supported sites live in a small adapter registry, so adding more
@@ -52,6 +53,7 @@ scripts/
   sync-manifest.mjs        # Regenerates manifest matches from the site adapters
 src/
   lib/
+    ext.js                 # Cross-browser API handle (browser ?? chrome)
     storage.js             # Settings: master + per-site enable (popup/worker/content)
     custom-domains.js      # Self-hosted domains: validate, store, register
   background/
@@ -71,15 +73,20 @@ src/
 
 ## Install locally (unpacked)
 
+**Chrome**
 1. Open `chrome://extensions`.
 2. Toggle **Developer mode** on (top-right).
 3. Click **Load unpacked** and select this project's root folder.
 4. Pin **Sync Theme**, open the popup, and make sure the master switch and the
    site you want are on.
 
-After editing files, click the **reload** icon on the extension card in
-`chrome://extensions` to pick up changes (and reload any open Slack/Grafana tabs
-so the new content script injects).
+After editing files, click the **reload** icon on the extension card, and reload
+any open Slack/Grafana tabs so the new content script injects.
+
+**Firefox**
+1. Open `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on…** and select this project's `manifest.json`.
+3. Use it the same way (temporary add-ons are removed when Firefox restarts).
 
 ## Scripts
 

@@ -1,3 +1,4 @@
+import { ext } from "../lib/ext.js";
 import {
   getSettings,
   setEnabled,
@@ -56,7 +57,7 @@ masterInput.addEventListener("change", () => setEnabled(masterInput.checked));
 
 document
   .getElementById("open-options")
-  .addEventListener("click", () => chrome.runtime.openOptionsPage());
+  .addEventListener("click", () => ext.runtime.openOptionsPage());
 
 // Reflect changes made elsewhere (other windows, the options page).
 onSettingsChanged(async () => render(await getSettings()));

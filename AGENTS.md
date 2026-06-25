@@ -8,9 +8,9 @@ For user-facing behavior and install steps, see [README.md](README.md).
 
 ## What this is
 
-A Manifest V3 Chrome extension that makes **Slack web** and **Grafana** follow
-the operating system's light/dark theme — on live OS changes, when a site is
-toggled on, and once when a matching tab loads.
+A Manifest V3 browser extension (Chrome **and** Firefox) that makes **Slack web**
+and **Grafana** follow the operating system's light/dark theme — on live OS
+changes, when a site is toggled on, and once when a matching tab loads.
 
 Status: working for Slack and Grafana, loadable unpacked, not yet published.
 
@@ -37,6 +37,29 @@ per-domain) — never by dropping the capability.
   host permissions requested at runtime. Avoid broad host permissions.
 - **Validate with `npm run check`** (syntax-checks `src/` + `scripts/` and
   verifies the manifest is in sync with the adapters). CI runs it on push/PR.
+
+## Cross-browser support (Chrome + Firefox)
+
+One codebase ships to both; the differences are small and isolated:
+
+- **API namespace** — `src/lib/ext.js` exports `ext = globalThis.browser ??
+  globalThis.chrome`. Use `ext.*` for all promise-based APIs (`storage`,
+  `permissions`, `scripting`, `runtime` events): `browser.*` is promise-based in
+  Firefox, `chrome.*` in Chrome MV3. `bootstrap.js` is a classic script so it
+  can't import the shim; it resolves the namespace inline (`runtime.getURL` is
+  synchronous on both).
+- **Background** — the manifest declares both `background.service_worker`
+  (Chrome) and `background.scripts` (Firefox event page) pointing at the same
+  module. The worker is event-driven, which suits both. Keep both keys.
+- **`browser_specific_settings.gecko`** — Firefox/AMO requires an extension id +
+  `strict_min_version`; Chrome ignores it.
+- **Dynamic content-script import** works in both; Firefox MV3 also requires the
+  imported modules to be in `web_accessible_resources` (which we already have).
+
+Not yet verified on a real Firefox build (do before an AMO release):
+`scripting.registerContentScripts({ persistAcrossSessions })`, and whether the
+static Slack/Grafana content scripts run without an extra per-site grant under
+Firefox's host-permission model. See PUBLISHING.md.
 
 ## Architecture: the site-adapter registry
 

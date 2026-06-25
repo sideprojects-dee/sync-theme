@@ -23,6 +23,9 @@
   },
   "background": {
     "service_worker": "src/background/service-worker.js",
+    "scripts": [
+      "src/background/service-worker.js"
+    ],
     "type": "module"
   },
   "permissions": [
@@ -59,5 +62,11 @@
       ]
     }
   ],
-  "minimum_chrome_version": "116"
+  "minimum_chrome_version": "116",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "sync-theme@sideprojects-dee",
+      "strict_min_version": "128.0"
+    }
+  }
 }

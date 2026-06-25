@@ -1,3 +1,4 @@
+import { ext } from "../lib/ext.js";
 import {
   normalizeFqdn,
   isValidFqdn,
@@ -21,7 +22,7 @@ const listEl = document.getElementById("domain-list");
 const emptyEl = document.getElementById("empty");
 
 // Cached so we can dedupe synchronously inside the submit handler — calling
-// chrome.permissions.request after an `await` would lose the user gesture.
+// permissions.request after an `await` would lose the user gesture.
 let domains = [];
 
 function showError(message) {
@@ -111,10 +112,10 @@ form.addEventListener("submit", async (event) => {
   render();
 });
 
-// Reflect changes made elsewhere (other options tabs, chrome://extensions).
-chrome.permissions.onAdded.addListener(render);
-chrome.permissions.onRemoved.addListener(render);
-chrome.storage.onChanged.addListener((_changes, area) => {
+// Reflect changes made elsewhere (other options tabs, the browser's extensions page).
+ext.permissions.onAdded.addListener(render);
+ext.permissions.onRemoved.addListener(render);
+ext.storage.onChanged.addListener((_changes, area) => {
   if (area === "local") render();
 });
 

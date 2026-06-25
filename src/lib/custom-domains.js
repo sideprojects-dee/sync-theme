@@ -8,8 +8,10 @@
 // content-script site detection picks whichever adapter matches the page (so
 // only domains running a supported app actually get themed).
 //
-// Stored in chrome.storage.local (not sync) because the matching host permission
-// is granted per-device — syncing the list wouldn't sync the permission.
+// The list is stored in local extension storage (not sync) because the matching
+// host permission is granted per-device — syncing the list wouldn't sync it.
+
+import { ext } from "./ext.js";
 
 const STORAGE_KEY = "customDomains";
 const SCRIPT_PREFIX = "custom-domain-";
@@ -44,30 +46,31 @@ function scriptId(fqdn) {
 }
 
 export async function getDomains() {
-  const data = await chrome.storage.local.get({ [STORAGE_KEY]: [] });
+  const data = await ext.storage.local.get({ [STORAGE_KEY]: [] });
   return data[STORAGE_KEY];
 }
 
 async function saveDomains(domains) {
-  await chrome.storage.local.set({ [STORAGE_KEY]: [...new Set(domains)].sort() });
+  await ext.storage.local.set({ [STORAGE_KEY]: [...new Set(domains)].sort() });
 }
 
 export function hasPermission(fqdn) {
-  return chrome.permissions.contains({ origins: [originPattern(fqdn)] });
+  return ext.permissions.contains({ origins: [originPattern(fqdn)] });
 }
 
 /**
  * Request the host permission for a domain. Must be called directly from a user
- * gesture (e.g. a click handler) with no preceding `await`, or Chrome rejects it.
+ * gesture (e.g. a click handler) with no preceding `await`, or the browser
+ * rejects it.
  * @returns {Promise<boolean>} whether the user granted it.
  */
 export function requestPermission(fqdn) {
-  return chrome.permissions.request({ origins: [originPattern(fqdn)] });
+  return ext.permissions.request({ origins: [originPattern(fqdn)] });
 }
 
 async function register(fqdn) {
   try {
-    await chrome.scripting.registerContentScripts([
+    await ext.scripting.registerContentScripts([
       {
         id: scriptId(fqdn),
         matches: [originPattern(fqdn)],
@@ -83,7 +86,7 @@ async function register(fqdn) {
 
 async function unregister(fqdn) {
   try {
-    await chrome.scripting.unregisterContentScripts({ ids: [scriptId(fqdn)] });
+    await ext.scripting.unregisterContentScripts({ ids: [scriptId(fqdn)] });
   } catch {
     // Not registered — nothing to do.
   }
@@ -105,7 +108,7 @@ export async function enableDomain(fqdn) {
 export async function removeDomain(fqdn) {
   await unregister(fqdn);
   try {
-    await chrome.permissions.remove({ origins: [originPattern(fqdn)] });
+    await ext.permissions.remove({ origins: [originPattern(fqdn)] });
   } catch {
     // Permission already gone — ignore.
   }
@@ -122,7 +125,7 @@ export async function reconcile() {
   const domains = await getDomains();
   let registered = [];
   try {
-    registered = await chrome.scripting.getRegisteredContentScripts();
+    registered = await ext.scripting.getRegisteredContentScripts();
   } catch {
     registered = [];
   }
@@ -142,7 +145,7 @@ export async function reconcile() {
   for (const id of ourIds) {
     if (!wantedIds.has(id)) {
       try {
-        await chrome.scripting.unregisterContentScripts({ ids: [id] });
+        await ext.scripting.unregisterContentScripts({ ids: [id] });
       } catch {
         // ignore
       }

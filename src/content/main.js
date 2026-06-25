@@ -2,6 +2,7 @@
 // light/dark theme via the matching site adapter — on live OS changes, when the
 // relevant setting is toggled on, and once at load.
 
+import { ext } from "../lib/ext.js";
 import { getSettings, siteIsEnabled, onSettingsChanged } from "../lib/storage.js";
 import { detectSite } from "./sites/index.js";
 
@@ -14,10 +15,10 @@ function desiredTheme() {
 }
 
 // When the extension reloads/updates, content scripts already on the page are
-// orphaned: chrome.runtime.id goes undefined and any chrome.* call throws
-// "Extension context invalidated". Detect that and stop touching chrome APIs.
+// orphaned: runtime.id goes undefined and any extension API call throws
+// "Extension context invalidated". Detect that and stop touching those APIs.
 function isConnected() {
-  return Boolean(chrome.runtime?.id);
+  return Boolean(ext.runtime?.id);
 }
 
 function teardown() {

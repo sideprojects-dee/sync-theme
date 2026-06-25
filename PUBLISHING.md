@@ -69,6 +69,22 @@ first review of the broad host permission — see the note at the bottom.
 **Privacy policy URL**
 - <https://github.com/sideprojects-dee/sync-theme/blob/main/PRIVACY.md>
 
+## Firefox (addons.mozilla.org)
+
+The same source runs on Firefox (see "Cross-browser support" in AGENTS.md):
+
+- **Package**: the same `npm run package` zip works.
+- **List** on <https://addons.mozilla.org> — free account, separate review. AMO
+  may review the source; we ship unbundled, so that's straightforward.
+- The manifest already carries `browser_specific_settings.gecko`
+  (`id: sync-theme@sideprojects-dee`, `strict_min_version`) and the dual
+  `background.service_worker` + `background.scripts` keys.
+- **Privacy policy**: the same `PRIVACY.md` URL.
+- **Verify on a real Firefox build before releasing**: the custom-domain
+  `permissions.request` + `scripting.registerContentScripts` flow, and that the
+  static Slack/Grafana content scripts run as expected under Firefox's per-site
+  host-permission model.
+
 ## Note: the broad optional host permission
 
 `optional_host_permissions: ["https://*/*"]` exists to support self-hosted

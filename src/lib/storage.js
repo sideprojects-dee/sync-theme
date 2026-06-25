@@ -1,30 +1,32 @@
 // Single source of truth for the extension's settings.
 //
-// Lives in chrome.storage.sync so choices ride along with the user's Chrome
-// profile. Two keys:
+// Lives in the WebExtension sync storage so choices ride along with the user's
+// browser profile. Two keys:
 //   enabled      boolean   master on/off
 //   siteEnabled  { [id]: boolean }   per-site overrides; a missing id means on
 //
-// Imported by the popup, the service worker, and (via the content-script
+// Imported by the popup, the background worker, and (via the content-script
 // bootstrap) the orchestrator.
+
+import { ext } from "./ext.js";
 
 /** @type {{ enabled: boolean }} */
 export const DEFAULTS = { enabled: true };
 
 /** @returns {Promise<{ enabled: boolean, siteEnabled: Record<string, boolean> }>} */
 export async function getSettings() {
-  return chrome.storage.sync.get({ enabled: DEFAULTS.enabled, siteEnabled: {} });
+  return ext.storage.sync.get({ enabled: DEFAULTS.enabled, siteEnabled: {} });
 }
 
 /** @param {boolean} value */
 export async function setEnabled(value) {
-  await chrome.storage.sync.set({ enabled: Boolean(value) });
+  await ext.storage.sync.set({ enabled: Boolean(value) });
 }
 
 /** @param {string} id @param {boolean} value */
 export async function setSiteEnabled(id, value) {
-  const { siteEnabled } = await chrome.storage.sync.get({ siteEnabled: {} });
-  await chrome.storage.sync.set({
+  const { siteEnabled } = await ext.storage.sync.get({ siteEnabled: {} });
+  await ext.storage.sync.set({
     siteEnabled: { ...siteEnabled, [id]: Boolean(value) },
   });
 }
@@ -50,6 +52,6 @@ export function onSettingsChanged(callback) {
       callback();
     }
   };
-  chrome.storage.onChanged.addListener(listener);
-  return () => chrome.storage.onChanged.removeListener(listener);
+  ext.storage.onChanged.addListener(listener);
+  return () => ext.storage.onChanged.removeListener(listener);
 }
