@@ -26,11 +26,28 @@ function desiredTheme() {
   return darkQuery.matches ? "dark" : "light";
 }
 
-async function onSystemThemeChange() {
-  // Disabled → do nothing at all.
-  if (!(await getEnabled())) return;
+// When the extension is reloaded/updated, content scripts already on the page are
+// orphaned: chrome.runtime.id goes undefined and any chrome.* call throws
+// "Extension context invalidated". Detect that and stop touching chrome APIs.
+function isConnected() {
+  return Boolean(chrome.runtime?.id);
+}
 
-  // Not a verified Slack/Grafana instance → do nothing.
+function teardown() {
+  darkQuery.removeEventListener("change", onSystemThemeChange);
+}
+
+async function onSystemThemeChange() {
+  if (!isConnected()) return teardown();
+
+  let enabled;
+  try {
+    enabled = await getEnabled();
+  } catch {
+    return teardown(); // context invalidated mid-call
+  }
+  if (!enabled) return;
+
   const site = detectSite();
   if (!site) return;
 
@@ -45,10 +62,21 @@ const LOAD_SYNC_INTERVAL_MS = 1000;
 const LOAD_SYNC_TIMEOUT_MS = 15000;
 
 async function syncOnLoad() {
-  if (!(await getEnabled())) return;
+  if (!isConnected()) return;
+
+  let enabled;
+  try {
+    enabled = await getEnabled();
+  } catch {
+    return;
+  }
+  if (!enabled) return;
+
   const deadline = Date.now() + LOAD_SYNC_TIMEOUT_MS;
 
   const tick = () => {
+    if (!isConnected()) return;
+
     const site = detectSite();
     if (site) {
       const target = desiredTheme();
