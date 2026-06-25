@@ -46,16 +46,13 @@ function isSlackInstance() {
 }
 
 function isGrafanaInstance() {
-  const { hostname } = location;
-  const isGrafanaHost =
-    hostname.endsWith(".grafana.net") ||
-    hostname.endsWith(".grafana.com") ||
-    hostname === "grafana.com";
-  if (!isGrafanaHost) return false;
-
+  // The content script only runs on Grafana Cloud (manifest matches) and on
+  // user-added domains (dynamically registered), so we verify by Grafana's own
+  // app markers rather than by hostname. This both excludes the grafana.com
+  // marketing site and supports self-hosted instances on arbitrary domains.
+  //
   // Every Grafana frontend (Cloud, login screen, self-hosted) serves its assets
-  // from /public/build/ and mounts into #reactRoot. The grafana.com marketing
-  // site does neither, which lets us exclude it.
+  // from /public/build/, ships Grafana's favicon, and mounts into #reactRoot.
   return Boolean(
     document.querySelector(
       "#reactRoot, script[src*='/public/build/'], link[href*='/public/img/fav']",

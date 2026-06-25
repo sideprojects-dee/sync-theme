@@ -17,11 +17,16 @@
       "32": "icons/icon-32.png"
     }
   },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
   "background": {
     "service_worker": "src/background/service-worker.js",
     "type": "module"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "scripting"],
+  "optional_host_permissions": ["https://*/*"],
   "content_scripts": [
     {
       "matches": [
@@ -38,13 +43,7 @@
   "web_accessible_resources": [
     {
       "resources": ["src/content/*.js", "src/lib/*.js"],
-      "matches": [
-        "https://*.slack.com/*",
-        "https://slack.com/*",
-        "https://*.grafana.net/*",
-        "https://*.grafana.com/*",
-        "https://grafana.com/*"
-      ]
+      "matches": ["https://*/*"]
     }
   ],
   "minimum_chrome_version": "116"

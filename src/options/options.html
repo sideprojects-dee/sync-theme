@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sync Theme — Options</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="page__header">
+        <img class="page__logo" src="../../icons/icon-48.png" alt="" width="40" height="40" />
+        <div>
+          <h1 class="page__title">Sync Theme</h1>
+          <p class="page__subtitle">Options</p>
+        </div>
+      </header>
+
+      <section class="card">
+        <h2 class="card__title">Custom Grafana domains</h2>
+        <p class="card__desc">
+          Grafana Cloud (<code>*.grafana.net</code>) works automatically — no setup
+          needed. Add a domain here only if you run a <strong>self-hosted</strong>
+          Grafana instance on your own URL.
+        </p>
+
+        <form id="add-form" class="add" novalidate>
+          <input
+            id="domain-input"
+            class="add__input"
+            type="text"
+            inputmode="url"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="grafana.example.com"
+            aria-label="Grafana domain"
+          />
+          <button class="add__button" type="submit">Add domain</button>
+        </form>
+        <p id="add-error" class="add__error" role="alert" hidden></p>
+
+        <ul id="domain-list" class="domains" aria-live="polite"></ul>
+        <p id="empty" class="domains__empty">No custom domains added yet.</p>
+      </section>
+
+      <p class="page__note">
+        Adding a domain asks Chrome for permission to run on that site. You can
+        remove it here at any time, or manage access from
+        <code>chrome://extensions</code>.
+      </p>
+    </main>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

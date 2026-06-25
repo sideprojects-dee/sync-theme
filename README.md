@@ -17,6 +17,11 @@ the sites you choose. The goal: when I switch my OS between light and dark mode,
   - Slack: `app.slack.com` and workspace `*.slack.com` subdomains.
   - Grafana: `*.grafana.net` and other `grafana.com`/`grafana.net` URLs whose
     page is confirmed to be the Grafana app.
+- **Self-hosted Grafana (optional)** — Grafana Cloud works out of the box. If you
+  run a self-hosted instance on your own domain, add it on the **options page**.
+  Each domain is gated behind a one-time Chrome permission prompt and served by a
+  dynamically-registered content script that persists across restarts. Pages are
+  still verified as real Grafana by their app markers before anything happens.
 - **On system theme change** — when enabled *and* on a verified instance:
   - **Slack**: the theme is applied automatically (no prompt), live, with no
     reload. `src/content/apply-slack.js` reconciles Slack's two theming layers —
@@ -40,15 +45,19 @@ icons/                     # Extension icons (icon.svg is the source of truth)
 src/
   lib/
     storage.js             # Shared `enabled` state (popup + worker + content)
+    custom-domains.js      # Self-hosted Grafana domains: validate, store, register
   background/
-    service-worker.js      # MV3 worker; seeds the default `enabled` flag
+    service-worker.js      # MV3 worker; seeds defaults, reconciles registrations
   popup/
-    popup.{html,css,js}    # Toolbar popup with the Enabled toggle
+    popup.{html,css,js}    # Toolbar popup with the Enabled toggle + options link
+  options/
+    options.{html,css,js}  # Manage the custom Grafana domain list
   content/
     bootstrap.js           # Classic entry; dynamically imports the ES modules
-    main.js                # Orchestrates: enabled? verified site? on change → prompt
+    main.js                # Orchestrates: enabled? verified site? apply / prompt
     sites.js               # Verifies Slack/Grafana instances vs. marketing
-    prompt.js              # Shadow-DOM confirmation prompt
+    apply-slack.js         # Applies the light/dark theme to Slack, live
+    prompt.js              # Shadow-DOM confirmation prompt (Grafana, for now)
 ```
 
 ## Install locally (unpacked)

@@ -16,6 +16,10 @@ input.addEventListener("change", async () => {
   render(input.checked);
 });
 
+document
+  .getElementById("open-options")
+  .addEventListener("click", () => chrome.runtime.openOptionsPage());
+
 // Keep the popup in sync if the flag changes elsewhere (e.g. another window).
 onEnabledChanged(render);
 
