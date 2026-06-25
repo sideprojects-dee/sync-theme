@@ -23,16 +23,12 @@ the sites you choose. The goal: when I switch my OS between light and dark mode,
   dynamically-registered content script that persists across restarts. Pages are
   still verified as real Grafana by their app markers before anything happens.
 - **On system theme change** — when enabled *and* on a verified instance:
-  - **Slack** (`src/content/apply-slack.js`): applied live, no reload. Reconciles
-    Slack's two theming layers — toggles the master palette class
-    (`body.sk-client-theme--dark`) and strips the sidebar-inversion classes so a
-    colored sidebar follows the color mode instead of rendering "inverse". Also
-    writes Slack's own storage (`slack-client-theme`, plus each workspace's
-    `iaTheming.mode`) so the choice persists across reloads and new tabs.
-
-    > Note: in light mode the sidebar follows the mode (light), rather than
-    > keeping a theme's dark/inverted sidebar. That's intentional for a
-    > follow-the-system extension.
+  - **Slack** (`src/content/apply-slack.js`): writes Slack's own
+    `slack-client-theme` key (`"light"`/`"dark"`) and reloads the tab. Slack's
+    color mode is React-rendered and computes per-workspace (custom) theme colors
+    that a CSS toggle can't reproduce, so reloading lets Slack repaint correctly —
+    including custom workspace themes. The reload is skipped when Slack is already
+    in the target mode.
   - **Grafana** (`src/content/apply-grafana.js`): detects the rendered theme via
     the CSS `color-scheme` on `<html>`, and if it differs from the target, fires
     Grafana's built-in toggle shortcut (the keys `c` then `t`). If a form field

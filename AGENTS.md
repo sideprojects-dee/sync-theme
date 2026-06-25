@@ -68,26 +68,29 @@ Grafana on any domain. The manifest matches broadly; this is the real gate.
 ## Reverse-engineered knowledge (don't relearn this the hard way)
 
 ### Slack (`src/content/apply-slack.js`)
-Slack's theme is **localStorage-backed and rendered by React** across *many*
-build-hashed CSS-module classes — you cannot reliably hand-toggle them all, and
-a content script can't make React re-render from a storage write. So we:
+Slack's color mode is **localStorage-backed and rendered by React**. We set
+Slack's own key `slack-client-theme` (`"light"|"dark"`) and **reload the tab** so
+Slack boots into the chosen mode. `currentSlackTheme()` reads that key back for
+the load-time mismatch check; the applier skips the reload if it's already set.
 
-1. **Toggle the master palette class** `body.sk-client-theme--dark` (present =
-   dark, absent = light). This re-drives Slack's whole CSS-variable palette
-   instantly, no reload.
-2. **Strip the sidebar-inversion layer.** Colored-sidebar themes (Aubergine, and
-   custom workspace themes) keep a dark/"inverted" sidebar in light mode via
-   `sk-client-theme--light-inverted-sidebar` (+ `p-body--chrome-inverted` on
-   body). If left while the body goes dark, the sidebar renders as a broken
-   "inverse" theme. We remove those so the sidebar follows the color mode.
-   *Consequence:* in light mode the sidebar becomes plain light (we drop the
-   colored/inverted sidebar) — intentional for a follow-the-system extension.
-3. **Persist** to Slack's own storage so the choice survives reloads/new tabs:
-   `slack-client-theme` (`"light"|"dark"`) and each workspace's
-   `localConfig_v2.teams[*].iaTheming.mode`.
+Why reload instead of a live DOM tweak (this was hard-won — don't redo it):
+- A content script can't make React re-render from a storage write, and a
+  synthetic `storage` event doesn't trigger Slack's cross-tab sync either.
+- We tried an instant, reload-free switch: toggle the master palette class
+  `body.sk-client-theme--dark` and strip the sidebar-inversion classes
+  (`sk-client-theme--light-inverted-sidebar` / `p-body--chrome-inverted`). This
+  works for **built-in** themes but **cannot reproduce a custom workspace theme's
+  computed sidebar colors**, so custom-themed workspaces rendered as an ugly
+  inversion. Only Slack re-rendering recomputes those — hence reload.
+- `localConfig_v2` (which once held `iaTheming.mode`) appears to have moved out
+  of localStorage in recent Slack builds, so we no longer touch it; setting
+  `slack-client-theme` + reload is sufficient.
 
-Notes: synthetic approaches (dispatching a `storage` event) do **not** make Slack
-re-render. A full reload also works and is version-proof but was rejected for UX.
+Trade-off: every Slack tab reloads on a theme change. If you want to revisit
+no-reload, the only robust route is driving Slack's real Light/Dark control by
+programmatically opening Preferences → Themes and clicking the radio (uses
+Slack's own logic, so custom themes render correctly) — at the cost of a brief
+Preferences-modal flash.
 
 ### Grafana (`src/content/apply-grafana.js`)
 - **Detect the current theme** via `getComputedStyle(document.documentElement)
@@ -129,15 +132,10 @@ See README "Project layout". Key dirs: `src/lib/` (shared), `src/background/`,
 - **Reload tabs after reloading the extension.** Old content scripts are
   orphaned; the guard stops them erroring, but they won't theme until the tab
   reloads and re-injects.
-- **Slack React may re-assert inverted classes** in theory (its Redux still holds
-  the old theme). Observed stable in practice; if it regresses, add a
-  `MutationObserver` on `<body>` that re-strips them. Not implemented yet.
 - **Don't add `await` before `chrome.permissions.request()`** — it loses the user
   gesture.
 - **`storage.js` stays context-agnostic.** Handle extension-context invalidation
   in the content layer (`main.js`), not by making shared helpers swallow errors.
-- Slack `localConfig_v2` is a large Slack-owned blob; `syncWorkspaceModes()` only
-  touches `iaTheming.mode` and swallows parse errors. Don't expand what it edits.
 
 ## How to extend
 
@@ -156,8 +154,6 @@ it live this way over guessing — both Slack and Grafana change their internals
 ## Open follow-ups
 - **Sync on enable**: toggling the popup on doesn't re-theme an already-open tab
   until the next OS change or reload. Could listen for the storage change.
-- **Slack load consistency**: load-sync only corrects a color-mode *mismatch*, so
-  opening Slack in matching light mode keeps its native colored sidebar, whereas
-  *toggling* to light strips it. Decide whether to always normalize.
-- **Slack class re-assertion**: optional `MutationObserver` hardening (above).
+- **Slack no-reload**: revisit the Preferences-radio approach if the reload UX
+  becomes a problem (see the Slack section).
 - **Publishing**: Chrome Web Store listing/review (justify `optional_host_permissions`).
