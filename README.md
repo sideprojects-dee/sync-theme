@@ -29,11 +29,12 @@ along.
   content script that persists across restarts. Pages are still verified as the
   real app by their markers before anything happens.
 - **On system theme change** — when enabled *and* on a verified instance:
-  - **Slack** (`src/content/sites/slack.js`): briefly drives Slack's own
-    Appearance picker — opens Preferences → Appearance, clicks the Light/Dark
-    radio, and closes — so Slack's real theme logic repaints correctly (including
-    custom workspace themes), live, with no page reload. The dialog only flashes
-    up when the theme actually needs to change.
+  - **Slack** (`src/content/sites/slack.js`): drives Slack's own Appearance
+    picker **invisibly** — it opens Preferences → Appearance, clicks the
+    Light/Dark radio, and closes, with the menu and dialog rendered transparent
+    (`opacity: 0`) so there's no visible flash. Clicking the real picker runs
+    Slack's theme logic, so it repaints correctly (including custom workspace
+    themes), live, with no page reload — and only when the theme needs to change.
   - **Grafana** (`src/content/sites/grafana.js`): detects the rendered theme via
     the CSS `color-scheme` on `<html>`, and if it differs from the target, fires
     Grafana's built-in toggle shortcut (the keys `c` then `t`). If a form field

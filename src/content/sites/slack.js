@@ -16,10 +16,17 @@ const THEME_KEY = "slack-client-theme"; // "light" | "dark"; Slack keeps this cu
 const SELECTORS = {
   userButton: "[data-qa='user-button']",
   menuItem: "[data-qa='menu_item_button']",
+  menuItems: "[data-qa='menu_items']",
   prefsTab: "[data-qa='tabs_item']",
   themingSection: "[data-qa='ia4-theming-section']",
   closeButton: ".c-sk-modal_portal [data-qa='close']",
+  modalPortal: ".c-sk-modal_portal",
 };
+
+// While we drive the picker, render Slack's popover menu + Preferences dialog
+// invisibly so the user never sees them. opacity:0 keeps them laid out and
+// clickable (we dispatch the clicks directly), and hides the backdrop dimming too.
+const HIDE_STYLE_ID = "sync-theme-suppress-prefs";
 
 let busy = false;
 
@@ -72,8 +79,9 @@ function currentTheme() {
   }
 }
 
-/** Open Preferences → Appearance, pick the theme, close. */
+/** Open Preferences → Appearance, pick the theme, close — invisibly. */
 async function driveAppearancePicker(theme) {
+  hideModals();
   try {
     const userButton = await waitFor(SELECTORS.userButton);
     if (!userButton) return;
@@ -95,10 +103,34 @@ async function driveAppearancePicker(theme) {
     const close = document.querySelector(SELECTORS.closeButton);
     if (close) fireClick(close);
   } finally {
-    // If we bailed mid-flow, dismiss whatever menu/dialog is still open.
-    if (document.querySelector(SELECTORS.themingSection) || document.querySelector("[data-qa='menu_items']")) {
+    // Dismiss anything still open, wait for it to actually leave the DOM while
+    // still hidden, then reveal modals again so nothing flickers.
+    if (document.querySelector(SELECTORS.themingSection) || document.querySelector(SELECTORS.menuItems)) {
       pressEscape();
     }
+    await waitGone(`${SELECTORS.modalPortal}, ${SELECTORS.menuItems}`, 1500);
+    showModals();
+  }
+}
+
+function hideModals() {
+  if (document.getElementById(HIDE_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = HIDE_STYLE_ID;
+  style.textContent = ".c-sk-modal_portal, .ReactModalPortal { opacity: 0 !important; }";
+  document.head.appendChild(style);
+}
+
+function showModals() {
+  document.getElementById(HIDE_STYLE_ID)?.remove();
+}
+
+/** Poll until nothing matches `selector`, up to `timeout` ms. */
+async function waitGone(selector, timeout = 1500) {
+  const deadline = Date.now() + timeout;
+  while (document.querySelector(selector)) {
+    if (Date.now() > deadline) return;
+    await sleep(50);
   }
 }
 

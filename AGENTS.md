@@ -143,12 +143,26 @@ re-render. So `apply()` drives Slack's **own** Appearance picker: open Preferenc
 `[data-qa='ia4-theming-section']` → close (`[data-qa='close']`). That runs Slack's
 real theme logic, so it repaints custom themes correctly, live, with no reload.
 
+The whole flow is **invisible**: `hideModals()` injects a stylesheet setting
+`.c-sk-modal_portal, .ReactModalPortal { opacity: 0 !important }` before opening,
+so the popover menu, the Preferences dialog, and its backdrop render fully
+transparent — yet stay laid out and clickable, because we dispatch the clicks
+directly. After clicking close we wait for the dialog to leave the DOM (still
+hidden), then `showModals()` removes the stylesheet, so nothing ever flickers.
+
 `current()` reads `slack-client-theme` from localStorage (Slack keeps it current),
-so the picker only opens on a genuine mismatch — the dialog flashes up only when
-the theme actually changes. A module-level `busy` flag stops the load-time poll
-from stacking dialogs; each navigation step polls up to 5s; `fireClick` dispatches
-mousedown/mouseup/click so React handlers fire. If Slack restructures Preferences,
-update the `SELECTORS` in `slack.js`.
+so the flow only runs on a genuine mismatch. A module-level `busy` flag stops the
+load-time poll from stacking concurrent runs; each navigation step polls up to 5s;
+`fireClick` dispatches mousedown/mouseup/click so React handlers fire.
+
+Caveats:
+- **Focus still moves.** The modal grabs focus while hidden and returns it on
+  close, so a keystroke could be dropped if the user is typing in Slack at the
+  instant the OS theme flips. Far less disruptive than a visible modal, not zero.
+- **Extra coupling.** This leans on the portal class names (`c-sk-modal_portal`,
+  `ReactModalPortal`) on top of the `data-qa` hooks. If Slack renames them, worst
+  case is the flash returning — not breakage. All hooks live in `SELECTORS`;
+  update them there if Slack restructures Preferences.
 
 History (don't redo these dead ends):
 - A content script can't make React re-render from a storage write; a synthetic
