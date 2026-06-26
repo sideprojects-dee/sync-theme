@@ -12,7 +12,8 @@ A Manifest V3 browser extension (Chrome **and** Firefox) that makes **Slack web*
 and **Grafana** follow the operating system's light/dark theme — on live OS
 changes, when a site is toggled on, and once when a matching tab loads.
 
-Status: working for Slack and Grafana, loadable unpacked, not yet published.
+Status: working on **Chrome and Firefox** for Slack and Grafana, loadable
+unpacked, not yet published.
 
 ## Hard requirement: self-hosted Grafana support
 
@@ -56,10 +57,9 @@ One codebase ships to both; the differences are small and isolated:
 - **Dynamic content-script import** works in both; Firefox MV3 also requires the
   imported modules to be in `web_accessible_resources` (which we already have).
 
-Not yet verified on a real Firefox build (do before an AMO release):
-`scripting.registerContentScripts({ persistAcrossSessions })`, and whether the
-static Slack/Grafana content scripts run without an extra per-site grant under
-Firefox's host-permission model. See PUBLISHING.md.
+Verified working on a real Firefox build (June 2026): Slack + Grafana theming,
+the custom-domain `permissions.request` + `scripting.registerContentScripts`
+flow, and the static content scripts all behave as expected.
 
 ## Architecture: the site-adapter registry
 
@@ -135,27 +135,32 @@ combined check used by the content script.
 ## Reverse-engineered knowledge (don't relearn this the hard way)
 
 ### Slack (`src/content/sites/slack.js`)
-Slack's color mode is **localStorage-backed and rendered by React**. We set
-Slack's own key `slack-client-theme` (`"light"|"dark"`) and **reload the tab** so
-Slack boots into the chosen mode. `current()` reads that key back; `apply()` skips
-the reload if it's already set.
+Slack's color mode is React-rendered and, for custom workspace themes, can't be
+reproduced by toggling CSS classes — and a storage write won't make React
+re-render. So `apply()` drives Slack's **own** Appearance picker: open Preferences
+(`[data-qa='user-button']` → menu item "Preferences") → the "Appearance" tab
+(`[data-qa='tabs_item']`) → click the Light/Dark radio inside
+`[data-qa='ia4-theming-section']` → close (`[data-qa='close']`). That runs Slack's
+real theme logic, so it repaints custom themes correctly, live, with no reload.
 
-Why reload instead of a live DOM tweak (hard-won — don't redo it):
-- A content script can't make React re-render from a storage write, and a
-  synthetic `storage` event doesn't trigger Slack's cross-tab sync either.
-- We tried an instant, reload-free switch: toggle `body.sk-client-theme--dark`
-  and strip the sidebar-inversion classes (`sk-client-theme--light-inverted-sidebar`
-  / `p-body--chrome-inverted`). Works for **built-in** themes but **cannot
-  reproduce a custom workspace theme's computed sidebar colors**, so custom-themed
-  workspaces rendered as an ugly inversion. Only Slack re-rendering recomputes
-  those — hence reload.
-- `localConfig_v2` (which once held `iaTheming.mode`) appears to have moved out of
-  localStorage in recent Slack builds; we no longer touch it.
+`current()` reads `slack-client-theme` from localStorage (Slack keeps it current),
+so the picker only opens on a genuine mismatch — the dialog flashes up only when
+the theme actually changes. A module-level `busy` flag stops the load-time poll
+from stacking dialogs; each navigation step polls up to 5s; `fireClick` dispatches
+mousedown/mouseup/click so React handlers fire. If Slack restructures Preferences,
+update the `SELECTORS` in `slack.js`.
 
-Trade-off: each Slack tab reloads on a theme change. To revisit no-reload, the
-only robust route is driving Slack's real Light/Dark control by programmatically
-opening Preferences → Themes and clicking the radio (Slack's own logic → custom
-themes render correctly) — at the cost of a brief Preferences-modal flash.
+History (don't redo these dead ends):
+- A content script can't make React re-render from a storage write; a synthetic
+  `storage` event doesn't trigger Slack's cross-tab sync either.
+- Toggling `body.sk-client-theme--dark` + stripping the sidebar-inversion classes
+  (`sk-client-theme--light-inverted-sidebar` / `p-body--chrome-inverted`) gives an
+  instant switch for **built-in** themes but **cannot reproduce a custom theme's
+  computed sidebar colors** → ugly inversion.
+- Writing `slack-client-theme` + reloading the tab also works and is version-proof,
+  but the reload UX was unwanted — hence the Preferences-picker approach.
+- `localConfig_v2` (once held `iaTheming.mode`) seems to have moved out of
+  localStorage in recent builds; we don't touch it.
 
 ### Grafana (`src/content/sites/grafana.js`)
 - **Detect** via `getComputedStyle(document.documentElement).colorScheme` →
