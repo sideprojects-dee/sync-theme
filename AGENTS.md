@@ -8,12 +8,13 @@ For user-facing behavior and install steps, see [README.md](README.md).
 
 ## What this is
 
-A Manifest V3 browser extension (Chrome **and** Firefox) that makes **Slack web**
-and **Grafana** follow the operating system's light/dark theme — on live OS
-changes, when a site is toggled on, and once when a matching tab loads.
+A Manifest V3 browser extension (Chrome **and** Firefox) that makes **Gmail**,
+**Grafana**, and **Slack web** follow the operating system's light/dark theme —
+on live OS changes, when a site is toggled on, and once when a matching tab loads.
 
-Status: working on **Chrome and Firefox** for Slack and Grafana, loadable
-unpacked, not yet published.
+Status: loadable unpacked, not yet published. Gmail, Grafana, and Slack all work
+on **Chrome**; Grafana and Slack are also verified on **Firefox** (Gmail on
+Firefox is untested, but uses the same content-script path).
 
 ## Hard requirement: self-hosted Grafana support
 
@@ -57,7 +58,7 @@ One codebase ships to both; the differences are small and isolated:
 - **Dynamic content-script import** works in both; Firefox MV3 also requires the
   imported modules to be in `web_accessible_resources` (which we already have).
 
-Verified working on a real Firefox build (June 2026): Slack + Grafana theming,
+Verified working on a real Firefox build (June 2026): Grafana + Slack theming,
 the custom-domain `permissions.request` + `scripting.registerContentScripts`
 flow, and the static content scripts all behave as expected.
 
@@ -220,7 +221,7 @@ self-hosted instances on arbitrary domains we use **dynamic registration**:
   in the content layer (`main.js`), not by making shared helpers swallow errors.
 
 ## Discovering site internals
-We reverse-engineered Slack/Grafana by pasting probe snippets into the site's
+We reverse-engineered Gmail/Grafana/Slack by pasting probe snippets into the site's
 DevTools console and watching `localStorage` diffs + class/attribute mutations
 while toggling the theme manually. When a mechanism is unclear, prefer confirming
 it live this way over guessing — both apps change their internals between builds.

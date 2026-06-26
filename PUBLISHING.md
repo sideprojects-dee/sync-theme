@@ -30,15 +30,16 @@ first review of the broad host permission — see the note at the bottom.
 - **Category**: Productivity
 - **Icon**: 128px — already embedded in the manifest.
 - **Screenshots**: at least one, **1280×800** (or 640×400). Suggestion: the popup
-  over a Slack tab and over a Grafana tab, in both light and dark.
+  over a Gmail tab, a Grafana tab, and a Slack tab, in both light and dark.
 - **Short description** (≤132 chars) — keep it the same as the manifest:
-  > Switches Slack and Grafana between light and dark to match your system theme. Works only on Slack and Grafana.
+  > Switches Gmail, Grafana, and Slack between light and dark to match your system theme. Works only on those sites.
 - **Detailed description** (suggested):
-  > Sync Theme keeps Slack and Grafana in step with your operating system's
-  > light/dark setting. Flip your OS to dark mode and your Slack and Grafana tabs
-  > follow automatically — and back to light when you switch back.
+  > Sync Theme keeps Gmail, Grafana, and Slack in step with your operating
+  > system's light/dark setting. Flip your OS to dark mode and your Gmail,
+  > Grafana, and Slack tabs follow automatically — and back to light when you
+  > switch back.
   >
-  > • Works on Slack web and Grafana (Grafana Cloud and self-hosted).
+  > • Works on Gmail, Grafana (Grafana Cloud and self-hosted), and Slack web.
   > • A master on/off switch plus a per-site toggle.
   > • Add self-hosted Grafana instances on your own domains — you approve each one.
   > • No accounts, no tracking, no data collection.
@@ -46,16 +47,17 @@ first review of the broad host permission — see the note at the bottom.
 ## Privacy tab — paste-ready
 
 **Single purpose**
-> Sync Theme switches Slack and Grafana between light and dark mode to match the
-> operating system's appearance setting.
+> Sync Theme switches Gmail, Grafana, and Slack between light and dark mode to
+> match the operating system's appearance setting.
 
 **Permission justifications**
 - **storage** — Stores the user's preferences (master on/off, per-site toggles,
   and any self-hosted domains they add). No browsing data.
 - **scripting** — Registers a content script at runtime for the self-hosted
   Grafana domains the user explicitly adds on the options page.
-- **Host access to Slack/Grafana** — Reads and sets the site's own light/dark
-  theme on Slack and Grafana pages; the content script must run there.
+- **Host access to Gmail/Grafana/Slack** — Reads and sets the site's own
+  light/dark theme on Gmail, Grafana, and Slack pages; the content script must
+  run there.
 - **Optional host permissions (`https://*/*`)** — Requested only on demand, one
   domain at a time, when the user adds a self-hosted Grafana instance on the
   options page. Never requested automatically; the user approves each domain via
@@ -82,8 +84,8 @@ The same source runs on Firefox (see "Cross-browser support" in AGENTS.md):
 - **Privacy policy**: the same `PRIVACY.md` URL.
 - **Verify on a real Firefox build before releasing**: the custom-domain
   `permissions.request` + `scripting.registerContentScripts` flow, and that the
-  static Slack/Grafana content scripts run as expected under Firefox's per-site
-  host-permission model.
+  static Gmail/Grafana/Slack content scripts run as expected under Firefox's
+  per-site host-permission model.
 
 ## Note: the broad optional host permission
 

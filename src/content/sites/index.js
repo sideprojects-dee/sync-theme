@@ -17,10 +17,13 @@
 // To add a site: create ./<site>.js exporting an adapter, add it to SITES, then
 // run `npm run manifest` to update the manifest's match patterns.
 
-import { slack } from "./slack.js";
+import { gmail } from "./gmail.js";
 import { grafana } from "./grafana.js";
+import { slack } from "./slack.js";
 
-export const SITES = [slack, grafana];
+// Kept alphabetical by id so the registry — and every UI surface derived from it
+// — has a predictable order, and there's an obvious place to slot the next site.
+export const SITES = [gmail, grafana, slack];
 
 /** @returns the adapter for the current page, or null. */
 export function detectSite() {

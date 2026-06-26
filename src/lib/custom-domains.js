@@ -1,6 +1,6 @@
 // Manages the user's optional list of self-hosted instance domains.
 //
-// Hosted services (Grafana Cloud, Slack, etc.) are handled by the static content
+// Hosted services (Gmail, Grafana Cloud, Slack, etc.) are handled by the static content
 // script in the manifest and need no setup. This module is only for self-hosted
 // instances on the user's own domains: each is gated behind an optional host
 // permission and served by a dynamically-registered content script that persists

@@ -2,8 +2,8 @@
 
 _Last updated: 25 June 2026_
 
-Sync Theme is a Chrome extension that switches Slack and Grafana between light
-and dark mode to match your operating system's appearance setting.
+Sync Theme is a Chrome extension that switches Gmail, Grafana, and Slack between
+light and dark mode to match your operating system's appearance setting.
 
 ## Summary
 
@@ -12,9 +12,10 @@ browsing data. It has no servers, no analytics, and no third-party services.
 
 ## What the extension accesses
 
-- **On the Slack and Grafana pages it runs on**, it reads and sets that site's
-  own light/dark theme setting (through the page's own storage and built-in
-  controls). It does not read your messages, dashboards, or other page content.
+- **On the Gmail, Grafana, and Slack pages it runs on**, it reads and sets that
+  site's own light/dark theme setting (through the page's own storage, built-in
+  controls, or — for Gmail — the colour rendered on screen). It does not read
+  your emails, dashboards, messages, or other page content.
 - **Extension settings** — your on/off toggles and any self-hosted domains you
   add — are stored using Chrome's `storage` API. The on/off preferences live in
   `chrome.storage.sync`, which Chrome may synchronize across your own signed-in
@@ -23,8 +24,8 @@ browsing data. It has no servers, no analytics, and no third-party services.
 
 ## Host permissions
 
-- The extension runs automatically only on Slack (`*.slack.com`) and Grafana
-  (`*.grafana.net`, `grafana.com`) pages.
+- The extension runs automatically only on Gmail (`mail.google.com`), Grafana
+  (`*.grafana.net`, `grafana.com`), and Slack (`*.slack.com`) pages.
 - The optional "all sites" host permission is **never used automatically**. It is
   requested only when you explicitly add a self-hosted instance domain on the
   options page — one domain at a time — and you approve each one through Chrome's
