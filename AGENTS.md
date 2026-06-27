@@ -116,6 +116,16 @@ must be in `web_accessible_resources` — hence WAR covers `src/content/*.js`,
 the files to be *fetched*; execution is still gated by content-script matches /
 dynamic registration + host permission.)
 
+The WAR `matches` must stay `https://*/*` because self-hosted domains are
+arbitrary and approved at runtime, so the modules can't be pre-scoped to known
+origins. This does expose a fixed, probe-able path (a minor fingerprinting
+vector), but **do not add `use_dynamic_url: true` to mitigate it** — it breaks
+the dynamic-import bootstrap. With it on, `runtime.getURL()` and the module
+graph's relative imports resolve across two different origins (the static
+extension id and the per-session GUID), so `main.js`'s `import "../lib/ext.js"`
+is denied and the content script fails to load. Tried on Chrome (June 2026),
+reverted.
+
 ### Orchestration (`src/content/main.js`)
 - `syncOnce()` is the core: check context is alive → read settings → `detectSite()`
   → if the site is enabled and `current() !== desiredTheme()`, call `apply()`.

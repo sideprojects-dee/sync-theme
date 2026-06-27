@@ -71,6 +71,53 @@ first review of the broad host permission — see the note at the bottom.
 **Privacy policy URL**
 - <https://github.com/sideprojects-dee/sync-theme/blob/main/PRIVACY.md>
 
+## Notes to reviewer — paste-ready
+
+Paste this into the **"Notes to reviewer"** field on the submission so the broad
+optional permission and the self-hosted flow can be verified quickly.
+
+> **What it does:** switches a site's own built-in light/dark theme to match the
+> OS appearance, on Gmail, Grafana, and Slack only.
+>
+> **No remote code, no minification.** The source is shipped exactly as written
+> (no bundler/transpiler); every file in the zip is the file that runs. No
+> network requests, no analytics, no remote servers.
+>
+> **Permissions:** `storage` holds the on/off toggles + the user's self-hosted
+> domain list. `scripting` registers a content script at runtime for self-hosted
+> domains the user adds. The static host access (Gmail/Grafana/Slack) is where
+> the theming runs.
+>
+> **About `optional_host_permissions: ["https://*/*"]`:** it is **never**
+> requested automatically. It is requested one domain at a time, from a user
+> click on the options page, so people can run the extension on a **self-hosted
+> Grafana** on their own domain. The extension then runs only on domains the
+> user approved.
+>
+> **How to test the built-in sites:** open Gmail / a Grafana instance / Slack
+> web, open the popup, ensure the master switch and that site are on, then flip
+> your OS between light and dark — the tab follows.
+>
+> **How to test the optional permission + self-hosted flow** (no own server
+> needed): `play.grafana.org` is a public Grafana instance that is *not* covered
+> by the built-in matches. Open the extension's options page, add
+> `play.grafana.org`, and approve Chrome's prompt — this demonstrates that the
+> broad permission is requested only per-domain and on demand. Open
+> `play.grafana.org` and flip the OS theme; it follows. Remove the domain on the
+> options page to revoke access.
+
+## Note on fingerprinting (`web_accessible_resources`)
+
+The extension's module files are web-accessible on `https://*/*` because the
+self-hosted-domain feature can inject them on any user-approved origin. That
+exposes a fixed, probe-able path (a minor fingerprinting vector). The usual
+mitigation, `"use_dynamic_url": true`, **cannot be used here**: it splits
+`runtime.getURL()` and the module graph's relative imports across two origins
+and breaks the dynamic-import bootstrap, so the content script fails to load
+(verified on Chrome, June 2026). If a reviewer raises fingerprinting, the honest
+answer is that the broad WAR is required by the self-hosted feature and the
+dynamic-URL mitigation is incompatible with the no-bundler module loading.
+
 ## Firefox (addons.mozilla.org)
 
 The same source runs on Firefox (see "Cross-browser support" in AGENTS.md):

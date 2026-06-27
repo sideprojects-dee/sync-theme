@@ -6,9 +6,9 @@ system's theme. It works **only** on those sites — nothing else. The goal: whe
 switch my OS between light and dark mode, Gmail, Grafana (Cloud or self-hosted),
 and Slack web follow along.
 
-> Status: early but functional. Gmail, Grafana, and Slack follow the OS theme on
-> change and at load. Supported sites live in a small adapter registry, so adding
-> more is a one-file change.
+> Status: functional and ready for release. Gmail, Grafana, and Slack follow the
+> OS theme on change and at load. Supported sites live in a small adapter
+> registry, so adding more is a one-file change.
 
 ## Behavior
 
@@ -105,8 +105,8 @@ any open Gmail/Grafana/Slack tabs so the new content script injects.
 Release Firefox requires Mozilla-signed add-ons, so installing an unsigned
 package from file only works on **ESR**, **Developer Edition**, or **Nightly**:
 
-1. Build the package: `npm run package`, then rename `sync-theme.zip` to
-   `sync-theme.xpi` (a `.xpi` is just the zip).
+1. Build the package: `npm run package` — this produces both `sync-theme.zip`
+   and `sync-theme.xpi` (a `.xpi` is just the zip).
 2. Open `about:config` and set `xpinstall.signatures.required` to `false`.
 3. Open `about:addons` → the gear icon → **Install Add-on From File…** → choose
    `sync-theme.xpi`.
@@ -124,7 +124,7 @@ few helper scripts (`icons` needs [ImageMagick](https://imagemagick.org),
 npm run check      # Syntax-check sources + verify the manifest is in sync
 npm run manifest   # Regenerate manifest content_scripts matches from the adapters
 npm run icons      # Regenerate PNG icons from icons/icon.svg
-npm run package    # Run manifest sync, then produce sync-theme.zip
+npm run package    # Run manifest sync, then produce sync-theme.zip + sync-theme.xpi
 ```
 
 CI (`.github/workflows/ci.yml`) runs `check` on every push and PR.

@@ -1,9 +1,10 @@
 # Privacy Policy — Sync Theme
 
-_Last updated: 25 June 2026_
+_Last updated: 27 June 2026_
 
-Sync Theme is a Chrome extension that switches Gmail, Grafana, and Slack between
-light and dark mode to match your operating system's appearance setting.
+Sync Theme is a browser extension (Chrome and Firefox) that switches Gmail,
+Grafana, and Slack between light and dark mode to match your operating system's
+appearance setting.
 
 ## Summary
 

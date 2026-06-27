@@ -1,14 +1,14 @@
 {
   "name": "sync-theme",
-  "version": "0.1.0",
-  "description": "Chrome extension that switches Gmail, Grafana, and Slack between light and dark to match your system theme.",
+  "version": "1.0.0",
+  "description": "Browser extension that switches Gmail, Grafana, and Slack between light and dark to match your system theme.",
   "private": true,
   "type": "module",
   "scripts": {
     "icons": "for s in 16 32 48 128; do magick -background none icons/icon.svg -resize ${s}x${s} icons/icon-${s}.png; done",
     "manifest": "node scripts/sync-manifest.mjs",
     "check": "node scripts/sync-manifest.mjs --check && find src scripts -type f \\( -name '*.js' -o -name '*.mjs' \\) -exec node --check {} ';'",
-    "package": "npm run manifest && rm -f sync-theme.zip && zip -r sync-theme.zip manifest.json icons src -x '*.DS_Store'"
+    "package": "npm run manifest && rm -f sync-theme.zip sync-theme.xpi && zip -r sync-theme.zip manifest.json icons src -x '*.DS_Store' && cp sync-theme.zip sync-theme.xpi"
   },
   "license": "Apache-2.0"
 }
