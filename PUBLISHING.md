@@ -89,6 +89,12 @@ optional permission and the self-hosted flow can be verified quickly.
 > (no bundler/transpiler); every file in the zip is the file that runs. No
 > network requests, no analytics, no remote servers.
 >
+> **About the linter's "Unsafe call to import" warning (bootstrap.js):** the
+> argument is `runtime.getURL("src/content/main.js")` — a fixed, hardcoded path
+> resolved to the extension's own origin, with no page or user input. It is the
+> standard ES-module content-script bootstrap (the reason the module files are in
+> web_accessible_resources); it cannot be written as a static literal.
+>
 > **Permissions:** `storage` holds the on/off toggles + the user's self-hosted
 > domain list. `scripting` registers a content script at runtime for self-hosted
 > domains the user adds. The static host access (Gmail/Grafana/Slack) is where

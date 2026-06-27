@@ -54,7 +54,10 @@ One codebase ships to both; the differences are small and isolated:
   (Chrome) and `background.scripts` (Firefox event page) pointing at the same
   module. The worker is event-driven, which suits both. Keep both keys.
 - **`browser_specific_settings.gecko`** — Firefox/AMO requires an extension id +
-  `strict_min_version`; Chrome ignores it.
+  `strict_min_version`, plus `data_collection_permissions` (Mozilla's built-in
+  data-consent requirement for new submissions). We collect nothing, so it's
+  `{ required: ["none"] }`. Chrome ignores the whole `browser_specific_settings`
+  block (and the per-browser build strips it from the Chrome package anyway).
 - **Dynamic content-script import** works in both; Firefox MV3 also requires the
   imported modules to be in `web_accessible_resources` (which we already have).
 
