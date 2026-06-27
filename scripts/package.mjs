@@ -72,6 +72,9 @@ const chromeZip = build("chrome", (m) => {
 const firefoxZip = build("firefox", (m) => {
   // Firefox 128 has no background service worker; drop it and keep `scripts`.
   delete m.background.service_worker;
+  // Chrome-only key; AMO's linter flags it as unknown. Firefox uses
+  // browser_specific_settings.gecko.strict_min_version instead.
+  delete m.minimum_chrome_version;
 });
 
 // A .xpi is just the Firefox zip under another extension.
