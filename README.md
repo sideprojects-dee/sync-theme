@@ -136,8 +136,9 @@ CI (`.github/workflows/ci.yml`) runs `check` on every push and PR.
 
 ## Publishing
 
-See [PUBLISHING.md](PUBLISHING.md) for the Chrome Web Store release checklist and
-paste-ready listing content, and [PRIVACY.md](PRIVACY.md) for the privacy policy.
+See [PUBLISHING.md](PUBLISHING.md) for the Chrome Web Store and Firefox AMO
+release checklist and paste-ready listing content, and [PRIVACY.md](PRIVACY.md)
+for the privacy policy.
 
 ## License
 

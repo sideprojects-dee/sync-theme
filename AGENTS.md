@@ -12,9 +12,10 @@ A Manifest V3 browser extension (Chrome **and** Firefox) that makes **Gmail**,
 **Grafana**, and **Slack web** follow the operating system's light/dark theme —
 on live OS changes, when a site is toggled on, and once when a matching tab loads.
 
-Status: loadable unpacked, not yet published. Gmail, Grafana, and Slack all work
-on **Chrome**; Grafana and Slack are also verified on **Firefox** (Gmail on
-Firefox is untested, but uses the same content-script path).
+Status: 1.0.0 submitted to the Chrome Web Store and Firefox AMO (27 June 2026),
+in review. Gmail, Grafana, and Slack all work on **Chrome**; Grafana and Slack
+are also verified on **Firefox** (Gmail on Firefox is untested, but uses the same
+content-script path).
 
 ## Hard requirement: self-hosted Grafana support
 
