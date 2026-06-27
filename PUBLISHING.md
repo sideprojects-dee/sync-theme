@@ -18,9 +18,11 @@ first review of the broad host permission — see the note at the bottom.
 
 1. Bump `version` in `manifest.json`.
 2. `npm run check` — syntax + manifest-in-sync with the adapters.
-3. `npm run package` — produces `sync-theme.zip` (manifest + icons + src).
+3. `npm run package` — produces per-browser packages (manifest + icons + src).
+   Upload `sync-theme-chrome.zip` here (its manifest has the Firefox-only keys
+   stripped, so the Chrome listing has no "Unrecognized manifest key" warning).
 4. [Developer Dashboard](https://chrome.google.com/webstore/devconsole) → **New
-   Item** (first time) or your existing item → upload the zip.
+   Item** (first time) or your existing item → upload `sync-theme-chrome.zip`.
 5. Fill / update the **Store listing** and **Privacy** tabs (below) → **Submit
    for review**. First review takes a few days to a couple of weeks; updates are
    usually 1–2 days.
@@ -122,12 +124,15 @@ dynamic-URL mitigation is incompatible with the no-bundler module loading.
 
 The same source runs on Firefox (see "Cross-browser support" in AGENTS.md):
 
-- **Package**: the same `npm run package` zip works.
+- **Package**: `npm run package` emits `sync-theme-firefox.zip` (and an
+  identical `.xpi`). Upload the Firefox zip to AMO. Its manifest keeps
+  `background.scripts` (the event page) and drops Chrome's `service_worker`.
 - **List** on <https://addons.mozilla.org> — free account, separate review. AMO
   may review the source; we ship unbundled, so that's straightforward.
-- The manifest already carries `browser_specific_settings.gecko`
-  (`id: sync-theme@sideprojects-dee`, `strict_min_version`) and the dual
-  `background.service_worker` + `background.scripts` keys.
+- The Firefox manifest carries `browser_specific_settings.gecko`
+  (`id: sync-theme@sideprojects-dee`, `strict_min_version`). The canonical
+  source `manifest.json` keeps both background keys for dev load-unpacked; the
+  packaging step splits them per browser so neither store sees a foreign key.
 - **Privacy policy**: the same `PRIVACY.md` URL.
 - **Verify on a real Firefox build before releasing**: the custom-domain
   `permissions.request` + `scripting.registerContentScripts` flow, and that the

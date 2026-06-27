@@ -92,9 +92,13 @@ src/
 After editing files, click the **reload** icon on the extension card, and reload
 any open Gmail/Grafana/Slack tabs so the new content script injects.
 
-> Chrome shows a harmless warning, *"Unrecognized manifest key
-> 'background.scripts'"*. That key is for Firefox's event page; Chrome uses
-> `background.service_worker` and ignores `scripts`. Safe to ignore.
+> Loading the repo root in Chrome shows a harmless warning, *"Unrecognized
+> manifest key 'background.scripts'"*. That key is for Firefox's event page;
+> Chrome uses `background.service_worker` and ignores `scripts`. It only appears
+> when loading the dual-purpose source manifest unpacked — the packaged Chrome
+> build (`npm run package` → `sync-theme-chrome.zip`) strips the Firefox-only
+> keys, so it has no warning. To dev-load without the warning, load `dist/chrome`
+> after running `npm run package`.
 
 **Firefox — temporary (any edition; removed on restart)**
 1. Open `about:debugging#/runtime/this-firefox`.
@@ -105,11 +109,12 @@ any open Gmail/Grafana/Slack tabs so the new content script injects.
 Release Firefox requires Mozilla-signed add-ons, so installing an unsigned
 package from file only works on **ESR**, **Developer Edition**, or **Nightly**:
 
-1. Build the package: `npm run package` — this produces both `sync-theme.zip`
-   and `sync-theme.xpi` (a `.xpi` is just the zip).
+1. Build the packages: `npm run package` — this produces `sync-theme-chrome.zip`,
+   `sync-theme-firefox.zip`, and `sync-theme-firefox.xpi` (the `.xpi` is just the
+   Firefox zip).
 2. Open `about:config` and set `xpinstall.signatures.required` to `false`.
 3. Open `about:addons` → the gear icon → **Install Add-on From File…** → choose
-   `sync-theme.xpi`.
+   `sync-theme-firefox.xpi`.
 
 On release (standard) Firefox this is blocked; you'd need a Mozilla-signed `.xpi`
 from [AMO](https://addons.mozilla.org).
@@ -124,7 +129,7 @@ few helper scripts (`icons` needs [ImageMagick](https://imagemagick.org),
 npm run check      # Syntax-check sources + verify the manifest is in sync
 npm run manifest   # Regenerate manifest content_scripts matches from the adapters
 npm run icons      # Regenerate PNG icons from icons/icon.svg
-npm run package    # Run manifest sync, then produce sync-theme.zip + sync-theme.xpi
+npm run package    # Build per-browser packages (chrome zip + firefox zip/xpi)
 ```
 
 CI (`.github/workflows/ci.yml`) runs `check` on every push and PR.
