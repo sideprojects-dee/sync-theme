@@ -32,7 +32,10 @@ first review of the broad host permission — see the note at the bottom.
 - **Category**: Productivity
 - **Icon**: 128px — already embedded in the manifest.
 - **Screenshots**: at least one, **1280×800** (or 640×400). Suggestion: the popup
-  over a Gmail tab, a Grafana tab, and a Slack tab, in both light and dark.
+  over a Gmail tab, a Grafana tab, and a Slack tab, in both light and dark. Keep
+  the source PNGs in [`store/screenshots/`](store/screenshots/) (see its README
+  for the shot list) — they're listing assets, uploaded in the dashboard, and are
+  not part of the packaged extension.
 - **Short description** (≤132 chars) — keep it the same as the manifest:
   > Switches Gmail, Grafana, and Slack between light and dark to match your system theme. Works only on those sites.
 - **Detailed description** (suggested):
