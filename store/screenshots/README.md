@@ -13,12 +13,14 @@ dashboard and are deliberately excluded from the packaged extension (the
 
 ## Shot list
 
-Capture the popup over a real tab, in **both light and dark**, for each site:
+Current set (all 1280×800):
 
-- `popup-gmail-light.png` / `popup-gmail-dark.png`
-- `popup-grafana-light.png` / `popup-grafana-dark.png`
-- `popup-slack-light.png` / `popup-slack-dark.png`
+- Grafana light + dark, on Chrome and Firefox.
+- The custom-domain flow (add a self-hosted instance), as a 3-step sequence —
+  this doubles as visual evidence of the optional, per-domain permission prompt.
 
-Optionally one wide "before/after" showing a tab following an OS theme flip.
-
-Drop the finished 1280×800 PNGs in this folder.
+**Gmail and Slack are intentionally omitted.** Screenshotting them means
+capturing a real inbox or workspace, which would leak personal/private content,
+and there's no test account that avoids that. Grafana (Grafana Play / a throwaway
+instance) shows the same light/dark behavior without exposing anything private,
+so it stands in for all three sites in the listing. Don't add Gmail/Slack shots.
