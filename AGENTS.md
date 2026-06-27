@@ -62,6 +62,15 @@ Verified working on a real Firefox build (June 2026): Grafana + Slack theming,
 the custom-domain `permissions.request` + `scripting.registerContentScripts`
 flow, and the static content scripts all behave as expected.
 
+Also smoke-tested as the **packaged Firefox `.xpi`** (27 June 2026) — i.e. the
+per-browser build whose manifest carries `background.scripts` only (no
+`service_worker`). Installs and runs, confirming the package split in
+`scripts/package.mjs` is correct, not just the dual dev manifest. Note: after a
+fresh install, already-open tabs must be reloaded before they theme (install
+never injects into existing tabs), and load-time correction has the usual poll
+latency (a beat or two, longer for Grafana while its shortcut handler readies) —
+both expected, not a Firefox bug.
+
 ## Architecture: the site-adapter registry
 
 Everything about one supported site lives in a single adapter object in

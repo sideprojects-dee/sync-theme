@@ -141,6 +141,9 @@ The same source runs on Firefox (see "Cross-browser support" in AGENTS.md):
   `permissions.request` + `scripting.registerContentScripts` flow, and that the
   static Gmail/Grafana/Slack content scripts run as expected under Firefox's
   per-site host-permission model.
+  - _Done for the current build (27 June 2026): the packaged `sync-theme-firefox.xpi`
+    (`background.scripts`-only manifest) was installed and smoke-tested. Re-run
+    this check whenever the manifest or background entry changes._
 
 ## Note: the broad optional host permission
 
