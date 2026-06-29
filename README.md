@@ -1,14 +1,17 @@
 # sync-theme
 
+[![Available in the Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Install_Sync_Theme-4285F4?style=for-the-badge&logo=chromewebstore&logoColor=white)](https://chromewebstore.google.com/detail/sync-theme/omldaklpfebhpnkldnlokhneagoojibj)
+
 A browser extension for **Chrome and Firefox** that switches **Gmail**,
 **Grafana**, and **Slack** between light and dark to match your operating
 system's theme. It works **only** on those sites — nothing else. The goal: when I
 switch my OS between light and dark mode, Gmail, Grafana (Cloud or self-hosted),
 and Slack web follow along.
 
-> Status: functional and ready for release. Gmail, Grafana, and Slack follow the
-> OS theme on change and at load. Supported sites live in a small adapter
-> registry, so adding more is a one-file change.
+> Status: **published on the [Chrome Web Store](https://chromewebstore.google.com/detail/sync-theme/omldaklpfebhpnkldnlokhneagoojibj)**;
+> the Firefox build is in review on AMO. Gmail, Grafana, and Slack follow the OS
+> theme on change and at load. Supported sites live in a small adapter registry,
+> so adding more is a one-file change.
 
 ## Behavior
 
